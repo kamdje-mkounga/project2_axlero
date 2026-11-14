@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {
   Routes,
   Route,
-  Navigate,
   NavLink,
   Link,
   useLocation,
@@ -11,6 +10,8 @@ import {
 
 import './App.css'
 import ProductImageUpload from './components/ProductImageUpload'
+import CartDrawer from './components/cart/CartDrawer'
+import { useCart } from './context'
 
 // Initial mock products for the consumer catalog
 const INITIAL_PRODUCTS = [
@@ -295,7 +296,7 @@ function AddProduct() {
 // ==========================================
 
 function StorefrontLayout() {
-  const [cartCount, setCartCount] = useState(2)
+  const { totalItems, toggleCart } = useCart()
 
   return (
     <div className="storefront-layout">
@@ -315,16 +316,30 @@ function StorefrontLayout() {
           <Link to="/vendor/dashboard" className="vendor-switch-btn">
             Vendor Portal
           </Link>
-          <div className="cart-badge-wrapper">
-            🛒 <span className="cart-count">{cartCount}</span>
-          </div>
+          <button
+            type="button"
+            className="cart-badge-wrapper"
+            onClick={toggleCart}
+            aria-label={`Shopping cart with ${totalItems} items`}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'inherit',
+              font: 'inherit',
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+          >
+            🛒 <span className="cart-count">{totalItems}</span>
+          </button>
         </div>
       </header>
 
       {/* Main Storefront Content */}
       <main className="store-main">
         <Routes>
-          <Route path="/" element={<ProductCatalog setCartCount={setCartCount} />} />
+          <Route path="/" element={<ProductCatalog />} />
         </Routes>
       </main>
 
@@ -336,7 +351,8 @@ function StorefrontLayout() {
   )
 }
 
-function ProductCatalog({ setCartCount }) {
+function ProductCatalog() {
+  const { addToCart, openCart } = useCart()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
 
@@ -348,9 +364,9 @@ function ProductCatalog({ setCartCount }) {
     return matchesSearch && matchesCategory
   })
 
-  function handleAddToCart(productName) {
-    setCartCount((prev) => prev + 1)
-    alert(`"${productName}" added to your cart!`)
+  function handleAddToCart(product) {
+    addToCart(product, 1)
+    openCart()
   }
 
   return (
@@ -400,7 +416,7 @@ function ProductCatalog({ setCartCount }) {
                   <span className="product-price">₹{product.price}</span>
                   <button
                     className="primary-btn sm"
-                    onClick={() => handleAddToCart(product.name)}
+                    onClick={() => handleAddToCart(product)}
                   >
                     Add to Cart
                   </button>
@@ -425,13 +441,16 @@ function ProductCatalog({ setCartCount }) {
 
 function App() {
   return (
-    <Routes>
-      {/* Vendor Portal Routes */}
-      <Route path="/vendor/*" element={<VendorLayout />} />
+    <>
+      <Routes>
+        {/* Vendor Portal Routes */}
+        <Route path="/vendor/*" element={<VendorLayout />} />
 
-      {/* Consumer Storefront Routes */}
-      <Route path="/*" element={<StorefrontLayout />} />
-    </Routes>
+        {/* Consumer Storefront Routes */}
+        <Route path="/*" element={<StorefrontLayout />} />
+      </Routes>
+      <CartDrawer />
+    </>
   )
 }
 
