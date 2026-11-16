@@ -52,7 +52,7 @@ const INITIAL_PRODUCTS = [
     price: 1899,
     stock: 5,
     status: 'Low Stock',
-    image: 'https://images.unsplash.com/photo-1534073828943-f801091fb18c?w=500&auto=format&fit=crop&q=60',
+    image: 'https://tse1.mm.bing.net/th/id/OIP.o7J7LdvZOlcGZiADlKnQSAHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
     description: 'Adjustable color temperatures with integrated Qi fast wireless charging base.',
   },
 ]
