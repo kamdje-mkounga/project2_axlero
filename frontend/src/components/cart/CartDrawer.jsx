@@ -105,11 +105,12 @@ export default function CartDrawer() {
           ) : (
             <ul className="cart-items-list">
               {items.map(({ product, quantity }) => {
+                const productId = product._id || product.id
                 const itemTotal = product.price * quantity
                 const isMaxStock = product.stock != null && quantity >= product.stock
 
                 return (
-                  <li key={product.id} className="cart-item">
+                  <li key={productId} className="cart-item">
                     <img
                       src={product.image}
                       alt={product.name}
@@ -122,7 +123,7 @@ export default function CartDrawer() {
                         <button
                           type="button"
                           className="cart-item-remove-btn"
-                          onClick={() => removeFromCart(product.id)}
+                          onClick={() => removeFromCart(productId)}
                           aria-label={`Remove ${product.name} from cart`}
                           title="Remove item"
                         >
@@ -138,7 +139,7 @@ export default function CartDrawer() {
                         <div className="quantity-stepper">
                           <button
                             type="button"
-                            onClick={() => updateQuantity(product.id, quantity - 1)}
+                            onClick={() => updateQuantity(productId, quantity - 1)}
                             aria-label="Decrease quantity"
                             disabled={quantity <= 1}
                           >
@@ -147,7 +148,7 @@ export default function CartDrawer() {
                           <span>{quantity}</span>
                           <button
                             type="button"
-                            onClick={() => updateQuantity(product.id, quantity + 1)}
+                            onClick={() => updateQuantity(productId, quantity + 1)}
                             aria-label="Increase quantity"
                             disabled={isMaxStock}
                           >
