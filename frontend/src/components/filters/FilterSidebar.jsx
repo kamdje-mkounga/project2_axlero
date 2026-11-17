@@ -56,7 +56,7 @@ export default function FilterSidebar({
         {/* Header */}
         <div className="filter-sidebar-header">
           <h3 className="filter-sidebar-title">
-            <span className="filter-icon">⚡</span> Filters
+            <span className="filter-icon"></span> Filters
           </h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasActiveFilters && (

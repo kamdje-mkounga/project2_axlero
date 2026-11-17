@@ -106,6 +106,667 @@ const INITIAL_PRODUCTS = [
     image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=60',
     description: '144Hz refresh rate curved gaming display with HDR600 and FreeSync Premium.',
   },
+
+  {
+    id: 9,
+    name: 'Smart Fitness Tracking Watch',
+    category: 'Electronics',
+    price: 2999,
+    stock: 20,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+    description: 'Track your daily activity, heart rate, sleep, and fitness goals with a sleek smartwatch.'
+  },
+  {
+    id: 10,
+    name: 'Portable Bluetooth Speaker',
+    category: 'Electronics',
+    price: 1799,
+    stock: 14,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500',
+    description: 'Compact wireless speaker with powerful sound and long-lasting battery.'
+  },
+  {
+    id: 11,
+    name: 'Wireless Gaming Mouse',
+    category: 'Electronics',
+    price: 1499,
+    stock: 3,
+    status: 'Low Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=500',
+    description: 'Precision optical sensor with adjustable DPI and ergonomic design.'
+  },
+  {
+    id: 12,
+    name: 'USB-C Fast Charging Hub',
+    category: 'Electronics',
+    price: 999,
+    stock: 35,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1625842268584-8f3296236761?w=500',
+    description: 'Multiport USB-C hub for connecting displays, storage, and accessories.'
+  },
+  {
+    id: 13,
+    name: 'Portable External SSD 1TB',
+    category: 'Electronics',
+    price: 5499,
+    stock: 9,
+    status: 'In Stock',
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=500',
+    description: 'Fast portable storage for backups, documents, photos, and videos.'
+  },
+  {
+    id: 14,
+    name: '1080p HD Webcam',
+    category: 'Electronics',
+    price: 2199,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=500',
+    description: 'Full HD webcam with clear video quality for meetings and streaming.'
+  },
+  {
+    id: 15,
+    name: 'Noise-Isolating Wireless Earbuds',
+    category: 'Electronics',
+    price: 1899,
+    stock: 22,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=500',
+    description: 'Lightweight earbuds with wireless connectivity and a compact charging case.'
+  },
+  {
+    id: 16,
+    name: 'Digital Drawing Tablet',
+    category: 'Electronics',
+    price: 3999,
+    stock: 6,
+    status: 'Low Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=500',
+    description: 'Responsive drawing surface for digital illustration and creative workflows.'
+  },
+  {
+    id: 17,
+    name: 'Smart Home Security Camera',
+    category: 'Electronics',
+    price: 2499,
+    stock: 18,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?w=500',
+    description: 'Indoor monitoring camera with motion detection and mobile app access.'
+  },
+  {
+    id: 18,
+    name: 'Adjustable Laptop Stand',
+    category: 'Electronics',
+    price: 1199,
+    stock: 28,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500',
+    description: 'Foldable ergonomic stand that improves laptop positioning and airflow.'
+  },
+  {
+    id: 19,
+    name: 'Classic Denim Jacket',
+    category: 'Fashion',
+    price: 2199,
+    stock: 16,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500',
+    description: 'Timeless denim jacket suitable for casual everyday outfits.'
+  },
+  {
+    id: 20,
+    name: 'Premium Leather Wallet',
+    category: 'Fashion',
+    price: 899,
+    stock: 30,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=500',
+    description: 'Compact wallet with multiple card slots and a minimalist design.'
+  },
+  {
+    id: 21,
+    name: 'Classic White Sneakers',
+    category: 'Fashion',
+    price: 2799,
+    stock: 11,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
+    description: 'Versatile everyday sneakers with a comfortable cushioned sole.'
+  },
+  {
+    id: 22,
+    name: 'Premium Cotton T-Shirt',
+    category: 'Fashion',
+    price: 699,
+    stock: 42,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500',
+    description: 'Soft breathable cotton T-shirt with a comfortable regular fit.'
+  },
+  {
+    id: 23,
+    name: 'Classic Analog Wristwatch',
+    category: 'Fashion',
+    price: 3499,
+    stock: 5,
+    status: 'Low Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500',
+    description: 'Elegant analog watch with a minimalist dial and premium strap.'
+  },
+  {
+    id: 24,
+    name: 'Polarized Sunglasses',
+    category: 'Fashion',
+    price: 1299,
+    stock: 19,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500',
+    description: 'Stylish sunglasses with polarized lenses for outdoor comfort.'
+  },
+  {
+    id: 25,
+    name: 'Travel Duffel Bag',
+    category: 'Fashion',
+    price: 1899,
+    stock: 13,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+    description: 'Spacious travel bag with organized compartments and durable fabric.'
+  },
+  {
+    id: 26,
+    name: 'Slim Fit Formal Shirt',
+    category: 'Fashion',
+    price: 1199,
+    stock: 24,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=500',
+    description: 'Smart formal shirt designed for professional and office wear.'
+  },
+  {
+    id: 27,
+    name: 'Women Casual Handbag',
+    category: 'Fashion',
+    price: 1599,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500',
+    description: 'Elegant everyday handbag with practical storage compartments.'
+  },
+  {
+    id: 28,
+    name: 'Winter Knit Beanie',
+    category: 'Fashion',
+    price: 499,
+    stock: 38,
+    status: 'In Stock',
+    rating: 4.2,
+    image: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=500',
+    description: 'Soft knitted beanie offering warmth and everyday comfort.'
+  },
+  {
+    id: 29,
+    name: 'Modern Ceramic Coffee Mug Set',
+    category: 'Home & Kitchen',
+    price: 799,
+    stock: 26,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500',
+    description: 'Minimalist ceramic mugs designed for coffee and tea lovers.'
+  },
+  {
+    id: 30,
+    name: 'Stainless Steel Water Bottle',
+    category: 'Home & Kitchen',
+    price: 699,
+    stock: 40,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500',
+    description: 'Reusable insulated bottle designed to keep drinks at the desired temperature.'
+  },
+  {
+    id: 31,
+    name: 'Modern Table Clock',
+    category: 'Home & Kitchen',
+    price: 599,
+    stock: 2,
+    status: 'Low Stock',
+    rating: 4.2,
+    image: 'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?w=500',
+    description: 'Minimalist decorative clock for desks, bedrooms, and living rooms.'
+  },
+  {
+    id: 32,
+    name: 'LED Decorative Floor Lamp',
+    category: 'Home & Kitchen',
+    price: 2299,
+    stock: 10,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500',
+    description: 'Modern floor lamp providing ambient lighting for your living space.'
+  },
+  {
+    id: 33,
+    name: 'Non-Stick Cookware Set',
+    category: 'Home & Kitchen',
+    price: 3299,
+    stock: 7,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=500',
+    description: 'Versatile cookware set designed for convenient everyday cooking.'
+  },
+  {
+    id: 34,
+    name: 'Cotton Bedsheet Set',
+    category: 'Home & Kitchen',
+    price: 1499,
+    stock: 21,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500',
+    description: 'Soft cotton bedding set designed for comfortable sleeping.'
+  },
+  {
+    id: 35,
+    name: 'Decorative Indoor Plant Pot',
+    category: 'Home & Kitchen',
+    price: 399,
+    stock: 32,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=500',
+    description: 'Stylish planter for adding greenery to your home or workspace.'
+  },
+  {
+    id: 36,
+    name: 'Digital Kitchen Food Scale',
+    category: 'Home & Kitchen',
+    price: 549,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=500',
+    description: 'Compact digital scale for accurate ingredient measurements.'
+  },
+  {
+    id: 37,
+    name: 'Modern Wall Art Print',
+    category: 'Home & Kitchen',
+    price: 899,
+    stock: 15,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500',
+    description: 'Contemporary wall artwork to enhance your interior decoration.'
+  },
+  {
+    id: 38,
+    name: 'Electric Hand Blender',
+    category: 'Home & Kitchen',
+    price: 1299,
+    stock: 8,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=500',
+    description: 'Convenient kitchen blender for smoothies, sauces, and soups.'
+  },
+  {
+    id: 39,
+    name: 'Deep Work by Cal Newport',
+    category: 'Books',
+    price: 499,
+    stock: 27,
+    status: 'In Stock',
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500',
+    description: 'Learn how to develop focused work habits and improve productivity.'
+  },
+  {
+    id: 40,
+    name: 'The Psychology of Money',
+    category: 'Books',
+    price: 399,
+    stock: 33,
+    status: 'In Stock',
+    rating: 4.9,
+    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500',
+    description: 'Explore the psychology behind financial decisions, wealth, and investing.'
+  },
+  {
+    id: 41,
+    name: 'Clean Code by Robert C. Martin',
+    category: 'Books',
+    price: 699,
+    stock: 12,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500',
+    description: 'A practical guide to writing readable and maintainable software.'
+  },
+  {
+    id: 42,
+    name: 'Rich Dad Poor Dad',
+    category: 'Books',
+    price: 349,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500',
+    description: 'A popular introduction to financial literacy and wealth-building concepts.'
+  },
+  {
+    id: 43,
+    name: 'The 7 Habits of Highly Effective People',
+    category: 'Books',
+    price: 549,
+    stock: 18,
+    status: 'In Stock',
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=500',
+    description: 'Develop principles for personal effectiveness and better decision-making.'
+  },
+  {
+    id: 44,
+    name: 'Introduction to Algorithms',
+    category: 'Books',
+    price: 1299,
+    stock: 6,
+    status: 'Low Stock',
+    rating: 4.9,
+    image: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500',
+    description: 'Comprehensive reference covering essential computer science algorithms.'
+  },
+  {
+    id: 45,
+    name: 'Start With Why by Simon Sinek',
+    category: 'Books',
+    price: 449,
+    stock: 22,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500',
+    description: 'Explore how purpose and leadership influence successful organizations.'
+  },
+  {
+    id: 46,
+    name: 'Think and Grow Rich',
+    category: 'Books',
+    price: 299,
+    stock: 31,
+    status: 'In Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500',
+    description: 'A classic personal development book about goals and achievement.'
+  },
+  {
+    id: 47,
+    name: 'Atomic Design by Brad Frost',
+    category: 'Books',
+    price: 799,
+    stock: 9,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500',
+    description: 'A guide to building consistent and reusable user interface systems.'
+  },
+  {
+    id: 48,
+    name: 'Professional Yoga Mat',
+    category: 'Sports',
+    price: 999,
+    stock: 25,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=500',
+    description: 'Non-slip exercise mat for yoga, stretching, and home workouts.'
+  },
+  {
+    id: 49,
+    name: 'Adjustable Dumbbell Set',
+    category: 'Sports',
+    price: 2499,
+    stock: 4,
+    status: 'Low Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500',
+    description: 'Versatile strength-training equipment for home fitness routines.'
+  },
+  {
+    id: 50,
+    name: 'Professional Football',
+    category: 'Sports',
+    price: 899,
+    stock: 17,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1614632537423-1e6c2e7e0c2e?w=500',
+    description: 'Durable football suitable for recreational games and training.'
+  },
+  {
+    id: 51,
+    name: 'Premium Running Shoes',
+    category: 'Sports',
+    price: 3199,
+    stock: 13,
+    status: 'In Stock',
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500',
+    description: 'Lightweight running shoes with cushioned support for daily training.'
+  },
+  {
+    id: 52,
+    name: 'Stainless Steel Gym Shaker',
+    category: 'Sports',
+    price: 499,
+    stock: 29,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500',
+    description: 'Portable shaker bottle for mixing drinks before or after workouts.'
+  },
+  {
+    id: 53,
+    name: 'Resistance Bands Set',
+    category: 'Sports',
+    price: 599,
+    stock: 36,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500',
+    description: 'Multiple resistance levels for strength training and mobility exercises.'
+  },
+  {
+    id: 54,
+    name: 'Professional Badminton Racket',
+    category: 'Sports',
+    price: 1499,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500',
+    description: 'Lightweight racket designed for recreational badminton matches.'
+  },
+  {
+    id: 55,
+    name: 'Compact Jump Rope',
+    category: 'Sports',
+    price: 299,
+    stock: 41,
+    status: 'In Stock',
+    rating: 4.2,
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500',
+    description: 'Adjustable skipping rope for cardio and endurance training.'
+  },
+  {
+    id: 56,
+    name: 'Microfiber Sports Towel',
+    category: 'Sports',
+    price: 349,
+    stock: 23,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500',
+    description: 'Quick-drying lightweight towel for gym and outdoor activities.'
+  },
+  {
+    id: 57,
+    name: 'Hydrating Facial Cleanser',
+    category: 'Beauty',
+    price: 399,
+    stock: 20,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?w=500',
+    description: 'Gentle daily facial cleanser designed to remove dirt and impurities.'
+  },
+  {
+    id: 58,
+    name: 'Vitamin C Face Serum',
+    category: 'Beauty',
+    price: 599,
+    stock: 14,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500',
+    description: 'Lightweight facial serum formulated for everyday skincare routines.'
+  },
+  {
+    id: 59,
+    name: 'Moisturizing Body Lotion',
+    category: 'Beauty',
+    price: 449,
+    stock: 0,
+    status: 'Out of Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500',
+    description: 'Daily moisturizing lotion for soft and hydrated skin.'
+  },
+  {
+    id: 60,
+    name: 'Premium Hair Care Shampoo',
+    category: 'Beauty',
+    price: 349,
+    stock: 26,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500',
+    description: 'Gentle shampoo designed for regular hair cleansing and care.'
+  },
+  {
+    id: 61,
+    name: 'Makeup Brush Collection',
+    category: 'Beauty',
+    price: 799,
+    stock: 12,
+    status: 'In Stock',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500',
+    description: 'Multi-piece brush collection for precise and convenient makeup application.'
+  },
+  {
+    id: 62,
+    name: 'Compact Travel Makeup Mirror',
+    category: 'Beauty',
+    price: 499,
+    stock: 18,
+    status: 'In Stock',
+    rating: 4.2,
+    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500',
+    description: 'Portable mirror with a compact design for everyday grooming.'
+  },
+  {
+    id: 63,
+    name: 'Classic Leather Belt',
+    category: 'Accessories',
+    price: 699,
+    stock: 24,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1624222247344-550fb8d4c1c2?w=500',
+    description: 'Versatile belt with a timeless design for casual and formal outfits.'
+  },
+  {
+    id: 64,
+    name: 'Minimalist Silver Necklace',
+    category: 'Accessories',
+    price: 999,
+    stock: 10,
+    status: 'In Stock',
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500',
+    description: 'Elegant minimalist necklace suitable for everyday styling.'
+  },
+  {
+    id: 65,
+    name: 'Premium Travel Organizer',
+    category: 'Accessories',
+    price: 799,
+    stock: 7,
+    status: 'Low Stock',
+    rating: 4.4,
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+    description: 'Compact organizer for keeping travel essentials neatly arranged.'
+  },
+  {
+    id: 66,
+    name: 'Classic Baseball Cap',
+    category: 'Accessories',
+    price: 399,
+    stock: 34,
+    status: 'In Stock',
+    rating: 4.3,
+    image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500',
+    description: 'Adjustable everyday cap with a comfortable fit and classic style.'
+  },
+  {
+    id: 67,
+    name: 'Premium Keychain Set',
+    category: 'Accessories',
+    price: 199,
+    stock: 50,
+    status: 'In Stock',
+    rating: 4.1,
+    image: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=500',
+    description: 'Simple decorative keychains for organizing everyday keys.'
+  },
+  {
+    id: 68,
+    name: 'Classic Leather Card Holder',
+    category: 'Accessories',
+    price: 549,
+    stock: 16,
+    status: 'In Stock',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=500',
+    description: 'Slim card holder designed for carrying essential cards and IDs.'
+  }
 ]
 
 // ==========================================
@@ -479,11 +1140,11 @@ function ProductCatalog() {
   // Active filter checks
   const hasActiveFilters = Boolean(
     searchQuery.trim() ||
-      selectedCategory !== 'All' ||
-      priceRange[0] > 0 ||
-      priceRange[1] < 10000 ||
-      inStockOnly ||
-      minRating > 0
+    selectedCategory !== 'All' ||
+    priceRange[0] > 0 ||
+    priceRange[1] < 10000 ||
+    inStockOnly ||
+    minRating > 0
   )
 
   const activeFilterCount =
@@ -563,7 +1224,7 @@ function ProductCatalog() {
                 className="mobile-filter-trigger"
                 onClick={() => setIsMobileDrawerOpen(true)}
               >
-                <span>⚡ Filters</span>
+                <span> Filters</span>
                 {activeFilterCount > 0 && (
                   <span className="mobile-filter-badge">{activeFilterCount}</span>
                 )}
@@ -628,13 +1289,12 @@ function ProductCatalog() {
                           ★ {product.rating ? product.rating.toFixed(1) : '4.5'}
                         </span>
                         <span
-                          className={`product-stock-tag ${
-                            isOutOfStock
-                              ? 'out-of-stock'
-                              : isLowStock
-                                ? 'low-stock'
-                                : 'in-stock'
-                          }`}
+                          className={`product-stock-tag ${isOutOfStock
+                            ? 'out-of-stock'
+                            : isLowStock
+                              ? 'low-stock'
+                              : 'in-stock'
+                            }`}
                         >
                           {isOutOfStock
                             ? 'Out of Stock'
