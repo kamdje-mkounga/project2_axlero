@@ -52,9 +52,71 @@ const INITIAL_PRODUCTS = [
     price: 1899,
     stock: 5,
     status: 'Low Stock',
-    image: 'https://images.unsplash.com/photo-1534073828943-f801091fb18c?w=500&auto=format&fit=crop&q=60',
+    image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c',
     description: 'Adjustable color temperatures with integrated Qi fast wireless charging base.',
   },
+
+  {
+    id: 5,
+    name: 'Premium Smart Watch',
+    category: 'Electronics',
+    price: 2499,
+    stock: 20,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
+    description: 'Stylish smartwatch with fitness tracking, heart rate monitoring, and smart notifications.'
+  },
+  {
+    id: 6,
+    name: 'Running Sports Shoes',
+    category: 'Fashion',
+    price: 1799,
+    stock: 30,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
+    description: 'Comfortable lightweight sports shoes designed for running, walking, and everyday use.'
+  },
+  {
+    id: 7,
+    name: 'Wireless Bluetooth Speaker',
+    category: 'Electronics',
+    price: 1499,
+    stock: 15,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1',
+    description: 'Portable Bluetooth speaker with powerful sound, deep bass, and long battery life.'
+  },
+  {
+    id: 8,
+    name: 'Classic Leather Backpack',
+    category: 'Fashion',
+    price: 2199,
+    stock: 12,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62',
+    description: 'Durable and stylish backpack suitable for college, office, and travel.'
+  },
+  {
+    id: 9,
+    name: 'Modern Table Lamp',
+    category: 'Home & Kitchen',
+    price: 999,
+    stock: 8,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c',
+    description: 'Elegant table lamp that provides comfortable lighting for reading and working.'
+  },
+  {
+    id: 10,
+    name: 'Programming Fundamentals Book',
+    category: 'Books',
+    price: 599,
+    stock: 25,
+    status: 'In Stock',
+    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794',
+    description: 'Beginner-friendly programming book covering fundamental coding concepts and techniques.'
+  }
+
 ]
 
 // ==========================================
