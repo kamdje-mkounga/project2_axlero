@@ -26,14 +26,19 @@ function loadInitialCart() {
   return []
 }
 
+function getItemId(product) {
+  return product?._id || product?.id
+}
+
 function cartReducer(state, action) {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
       const { product, quantity = 1 } = action.payload
       if (!product || quantity <= 0) return state
 
+      const targetId = getItemId(product)
       const existingIndex = state.findIndex(
-        (item) => item.product.id === product.id
+        (item) => getItemId(item.product) === targetId
       )
 
       if (existingIndex > -1) {
@@ -54,18 +59,18 @@ function cartReducer(state, action) {
 
     case CART_ACTIONS.REMOVE_ITEM: {
       const { productId } = action.payload
-      return state.filter((item) => item.product.id !== productId)
+      return state.filter((item) => getItemId(item.product) !== productId)
     }
 
     case CART_ACTIONS.UPDATE_QUANTITY: {
       const { productId, quantity } = action.payload
 
       if (quantity <= 0) {
-        return state.filter((item) => item.product.id !== productId)
+        return state.filter((item) => getItemId(item.product) !== productId)
       }
 
       return state.map((item) => {
-        if (item.product.id !== productId) return item
+        if (getItemId(item.product) !== productId) return item
         const maxStock = item.product.stock ?? Infinity
         return {
           ...item,
