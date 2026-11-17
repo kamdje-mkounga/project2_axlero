@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Routes,
   Route,
@@ -838,6 +838,30 @@ function VendorLayout() {
 }
 
 function VendorDashboard() {
+  const [productCount, setProductCount] = useState(INITIAL_PRODUCTS.length)
+
+  useEffect(() => {
+    async function loadCount() {
+      try {
+        let res
+        try {
+          res = await fetch('/api/products')
+        } catch {
+          res = await fetch('http://localhost:5000/api/products')
+        }
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data)) {
+            setProductCount(data.length)
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch vendor count from DB:', err.message)
+      }
+    }
+    loadCount()
+  }, [])
+
   return (
     <>
       <div className="page-heading">
@@ -854,7 +878,7 @@ function VendorDashboard() {
         <div className="stat-card">
           <div className="stat-icon">📦</div>
           <p className="stat-label">Total Products</p>
-          <div className="stat-value">{INITIAL_PRODUCTS.length}</div>
+          <div className="stat-value">{productCount}</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🛒</div>
@@ -877,6 +901,34 @@ function VendorDashboard() {
 }
 
 function Products() {
+  const [vendorProducts, setVendorProducts] = useState(INITIAL_PRODUCTS)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true)
+        let res
+        try {
+          res = await fetch('/api/products')
+        } catch {
+          res = await fetch('http://localhost:5000/api/products')
+        }
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data) && data.length > 0) {
+            setVendorProducts(data)
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load vendor products from DB:', err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProducts()
+  }, [])
+
   return (
     <>
       <div className="page-heading">
@@ -890,7 +942,7 @@ function Products() {
       </div>
 
       <div className="panel">
-        <h2>Product List</h2>
+        <h2>Product List ({vendorProducts.length} items)</h2>
         <div className="table-wrapper">
           <table>
             <thead>
@@ -903,26 +955,29 @@ function Products() {
               </tr>
             </thead>
             <tbody>
-              {INITIAL_PRODUCTS.map((p) => (
-                <tr key={p.id}>
-                  <td style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px' }}
-                    />
-                    <span style={{ fontWeight: 500 }}>{p.name}</span>
-                  </td>
-                  <td>{p.category}</td>
-                  <td>₹{p.price}</td>
-                  <td>{p.stock}</td>
-                  <td>
-                    <span className={`status-badge ${p.status === 'In Stock' ? 'success' : 'warning'}`}>
-                      {p.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {vendorProducts.map((p) => {
+                const pId = p._id || p.id
+                return (
+                  <tr key={pId}>
+                    <td style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px' }}
+                      />
+                      <span style={{ fontWeight: 500 }}>{p.name}</span>
+                    </td>
+                    <td>{p.category}</td>
+                    <td>₹{p.price}</td>
+                    <td>{p.stock}</td>
+                    <td>
+                      <span className={`status-badge ${p.status === 'In Stock' ? 'success' : 'warning'}`}>
+                        {p.status}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -1075,35 +1130,86 @@ function ProductCatalog() {
   const [sortBy, setSortBy] = useState('featured')
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
 
-  const categories = useMemo(
-    () => ['All', 'Electronics', 'Fashion', 'Home & Kitchen', 'Books'],
-    []
-  )
+  // Live Database State
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadProducts() {
+      try {
+        setLoading(true)
+
+        let response
+        try {
+          response = await fetch('/api/products')
+        } catch {
+          response = await fetch('http://localhost:5000/api/products')
+        }
+
+        if (!response.ok) {
+          throw new Error(`Server returned HTTP ${response.status}`)
+        }
+
+        const data = await response.json()
+        if (isMounted) {
+          if (Array.isArray(data) && data.length > 0) {
+            setProducts(data)
+          } else {
+            // DB is empty, use initial fallback
+            setProducts(INITIAL_PRODUCTS)
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.warn('Could not fetch products from backend, falling back to mock data:', err.message)
+          setProducts(INITIAL_PRODUCTS)
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadProducts()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const categories = useMemo(() => {
+    const defaultCategories = ['All', 'Electronics', 'Fashion', 'Home & Kitchen', 'Books', 'Accessories']
+    const productCategories = products.map((p) => p.category).filter(Boolean)
+    return Array.from(new Set([...defaultCategories, ...productCategories]))
+  }, [products])
 
   // Category product counts
   const categoryCounts = useMemo(() => {
-    const counts = { All: INITIAL_PRODUCTS.length }
+    const counts = { All: products.length }
     for (const cat of categories) {
       if (cat !== 'All') {
-        counts[cat] = INITIAL_PRODUCTS.filter((p) => p.category === cat).length
+        counts[cat] = products.filter((p) => p.category === cat).length
       }
     }
     return counts
-  }, [categories])
+  }, [categories, products])
 
   const inStockCount = useMemo(() => {
-    return INITIAL_PRODUCTS.filter((p) => p.stock > 0).length
-  }, [])
+    return products.filter((p) => p.stock > 0).length
+  }, [products])
 
   // Filtering and Sorting Pipeline
   const filteredAndSortedProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
 
-    const filtered = INITIAL_PRODUCTS.filter((product) => {
+    const filtered = products.filter((product) => {
       const matchesSearch =
         !q ||
         product.name.toLowerCase().includes(q) ||
-        product.description.toLowerCase().includes(q)
+        (product.description && product.description.toLowerCase().includes(q))
       const matchesCategory =
         selectedCategory === 'All' || product.category === selectedCategory
       const matchesPrice =
@@ -1135,7 +1241,7 @@ function ProductCatalog() {
       default:
         return result
     }
-  }, [searchQuery, selectedCategory, priceRange, inStockOnly, minRating, sortBy])
+  }, [products, searchQuery, selectedCategory, priceRange, inStockOnly, minRating, sortBy])
 
   // Active filter checks
   const hasActiveFilters = Boolean(
@@ -1215,7 +1321,7 @@ function ProductCatalog() {
           <div className="catalog-control-bar">
             <div className="catalog-results-count">
               Showing <strong>{filteredAndSortedProducts.length}</strong> of{' '}
-              {INITIAL_PRODUCTS.length} products
+              {products.length} products
             </div>
 
             <div className="catalog-controls-right">
@@ -1267,7 +1373,12 @@ function ProductCatalog() {
 
           {/* Product Cards Grid */}
           <div className="product-grid">
-            {filteredAndSortedProducts.length > 0 ? (
+            {loading ? (
+              <div className="catalog-loading">
+                <div className="spinner"></div>
+                <p>Loading products from database...</p>
+              </div>
+            ) : filteredAndSortedProducts.length > 0 ? (
               filteredAndSortedProducts.map((product) => {
                 const productId = product._id || product.id
                 const isOutOfStock = product.stock === 0
