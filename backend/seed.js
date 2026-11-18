@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const { mongoUri } = require('./src/config/env');
 const Product = require('./src/infrastructure/database/ProductModel');
 const User = require('./src/infrastructure/database/UserModel');
@@ -11,24 +12,53 @@ async function seedDatabase() {
         await mongoose.connect(mongoUri);
         console.log('MongoDB Connected.');
 
-        // Find or create default vendor
-        let vendor = await User.findOne({ email: 'vendor@example.com' });
-        if (!vendor) {
-            vendor = await User.create({
+        // 1. Seed or Update Default Admin
+        const adminPassword = await bcrypt.hash('Admin123!', 10);
+        let admin = await User.findOneAndUpdate(
+            { email: 'admin@axlero.com' },
+            {
+                name: 'Super Admin',
+                email: 'admin@axlero.com',
+                password: adminPassword,
+                role: 'admin'
+            },
+            { upsert: true, new: true }
+        );
+        console.log('✅ Admin initialized:', admin.email, `(${admin.role})`);
+
+        // 2. Seed or Update Default Vendor
+        const vendorPassword = await bcrypt.hash('Password123!', 10);
+        let vendor = await User.findOneAndUpdate(
+            { email: 'vendor@example.com' },
+            {
                 name: 'Jane Vendor',
                 email: 'vendor@example.com',
-                password: 'Password123!',
+                password: vendorPassword,
                 role: 'vendor'
-            });
-            console.log('Created default vendor:', vendor.email);
-        }
+            },
+            { upsert: true, new: true }
+        );
+        console.log('✅ Vendor initialized:', vendor.email, `(${vendor.role})`);
 
-        // Read sample products
+        // 3. Seed or Update Default Customer
+        const customerPassword = await bcrypt.hash('Customer123!', 10);
+        let customer = await User.findOneAndUpdate(
+            { email: 'customer@example.com' },
+            {
+                name: 'Alice Customer',
+                email: 'customer@example.com',
+                password: customerPassword,
+                role: 'customer'
+            },
+            { upsert: true, new: true }
+        );
+        console.log('✅ Customer initialized:', customer.email, `(${customer.role})`);
+
+        // 4. Seed Products
         const productsFilePath = path.join(__dirname, 'products.json');
         const rawData = fs.readFileSync(productsFilePath, 'utf8');
         const sampleProducts = JSON.parse(rawData);
 
-        // Prepare products for MongoDB
         const productsToInsert = sampleProducts.map((p) => ({
             name: p.name,
             category: p.category,
@@ -41,7 +71,6 @@ async function seedDatabase() {
             vendorId: vendor._id
         }));
 
-        // Clear existing products and insert new ones
         await Product.deleteMany({});
         console.log('Cleared existing products.');
 
