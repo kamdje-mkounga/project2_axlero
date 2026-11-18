@@ -16,6 +16,11 @@ import FilterSidebar from './components/filters/FilterSidebar'
 import ActiveFilters from './components/filters/ActiveFilters'
 import { useCart } from './context'
 
+import AuthProvider from './context/AuthProvider'
+import Login from './components/auth/Login'
+import Register from './components/auth/Register'
+import { useAuth } from './context/AuthProvider'
+
 // Initial mock products for the consumer catalog
 const INITIAL_PRODUCTS = [
   {
@@ -106,7 +111,6 @@ const INITIAL_PRODUCTS = [
     image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=60',
     description: '144Hz refresh rate curved gaming display with HDR600 and FreeSync Premium.',
   },
-
   {
     id: 9,
     name: 'Smart Fitness Tracking Watch',
@@ -805,7 +809,7 @@ function VendorSidebar() {
 
 function VendorLayout() {
   const location = useLocation()
-  const titles = {
+  titles = {
     '/vendor/dashboard': 'Dashboard',
     '/vendor/products': 'My Products',
     '/vendor/products/add': 'Add Product',
@@ -1064,6 +1068,7 @@ function AddProduct() {
 
 function StorefrontLayout() {
   const { totalItems, toggleCart } = useCart()
+  const { user, logout } = useAuth() // Utilisation du contexte d'authentification réel
 
   return (
     <div className="storefront-layout">
@@ -1079,10 +1084,34 @@ function StorefrontLayout() {
           </NavLink>
         </div>
 
-        <div className="store-actions">
+        <div className="store-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link to="/vendor/dashboard" className="vendor-switch-btn">
             Vendor Portal
           </Link>
+
+          {/* Affichage dynamique Connexion / Utilisateur */}
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '14px', fontWeight: 500 }}>Hello, {user.name}</span>
+              <button
+                onClick={logout}
+                className="secondary-btn sm"
+                style={{ cursor: 'pointer', padding: '6px 12px' }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link to="/login" className="secondary-btn sm" style={{ textDecoration: 'none', padding: '6px 12px' }}>
+                Login
+              </Link>
+              <Link to="/register" className="primary-btn sm" style={{ textDecoration: 'none', padding: '6px 12px' }}>
+                Register
+              </Link>
+            </div>
+          )}
+
           <button
             type="button"
             className="cart-badge-wrapper"
@@ -1107,6 +1136,8 @@ function StorefrontLayout() {
       <main className="store-main">
         <Routes>
           <Route path="/" element={<ProductCatalog />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
 
@@ -1157,7 +1188,6 @@ function ProductCatalog() {
           if (Array.isArray(data) && data.length > 0) {
             setProducts(data)
           } else {
-            // DB is empty, use initial fallback
             setProducts(INITIAL_PRODUCTS)
           }
         }
@@ -1186,7 +1216,6 @@ function ProductCatalog() {
     return Array.from(new Set([...defaultCategories, ...productCategories]))
   }, [products])
 
-  // Category product counts
   const categoryCounts = useMemo(() => {
     const counts = { All: products.length }
     for (const cat of categories) {
@@ -1201,7 +1230,6 @@ function ProductCatalog() {
     return products.filter((p) => p.stock > 0).length
   }, [products])
 
-  // Filtering and Sorting Pipeline
   const filteredAndSortedProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
 
@@ -1243,7 +1271,6 @@ function ProductCatalog() {
     }
   }, [products, searchQuery, selectedCategory, priceRange, inStockOnly, minRating, sortBy])
 
-  // Active filter checks
   const hasActiveFilters = Boolean(
     searchQuery.trim() ||
     selectedCategory !== 'All' ||
@@ -1277,7 +1304,6 @@ function ProductCatalog() {
 
   return (
     <div className="catalog-container">
-      {/* Hero Banner */}
       <div className="store-hero">
         <h1>Discover Amazing Products</h1>
         <p>Shop top-quality items from verified vendors across India.</p>
@@ -1293,9 +1319,7 @@ function ProductCatalog() {
         </div>
       </div>
 
-      {/* Main 2-Column Filtering & Catalog Layout */}
       <div className="catalog-layout">
-        {/* Left Sidebar Filter Panel */}
         <FilterSidebar
           categories={categories}
           categoryCounts={categoryCounts}
@@ -1315,9 +1339,7 @@ function ProductCatalog() {
           hasActiveFilters={hasActiveFilters}
         />
 
-        {/* Right Main Catalog Content Area */}
         <div className="catalog-main-area">
-          {/* Controls Bar: Results Count, Mobile Filter Trigger, and Sort Dropdown */}
           <div className="catalog-control-bar">
             <div className="catalog-results-count">
               Showing <strong>{filteredAndSortedProducts.length}</strong> of{' '}
@@ -1355,7 +1377,6 @@ function ProductCatalog() {
             </div>
           </div>
 
-          {/* Active Filters Pill Bar */}
           <ActiveFilters
             searchQuery={searchQuery}
             category={selectedCategory}
@@ -1371,7 +1392,6 @@ function ProductCatalog() {
             onClearAll={handleResetAll}
           />
 
-          {/* Product Cards Grid */}
           <div className="product-grid">
             {loading ? (
               <div className="catalog-loading">
@@ -1464,7 +1484,7 @@ function ProductCatalog() {
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Routes>
         {/* Vendor Portal Routes */}
         <Route path="/vendor/*" element={<VendorLayout />} />
@@ -1473,7 +1493,7 @@ function App() {
         <Route path="/*" element={<StorefrontLayout />} />
       </Routes>
       <CartDrawer />
-    </>
+    </AuthProvider>
   )
 }
 
