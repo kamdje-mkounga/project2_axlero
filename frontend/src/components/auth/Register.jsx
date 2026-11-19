@@ -6,11 +6,12 @@ export default function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('customer');
     const { register, loading } = useAuth();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        register(name, email, password);
+        register(name, email, password, role);
     };
 
     return (
@@ -57,6 +58,19 @@ export default function Register() {
                             required
                             style={{ width: '100%', padding: '10px', marginTop: '6px', borderRadius: '6px', border: '1px solid #ddd' }}
                         />
+                    </div>
+
+                    <div className="form-group" style={{ textAlign: 'left' }}>
+                        <label htmlFor="role">I want to register as</label>
+                        <select
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            style={{ width: '100%', padding: '10px', marginTop: '6px', borderRadius: '6px', border: '1px solid #ddd', background: '#fff' }}
+                        >
+                            <option value="customer">Customer (Shop products)</option>
+                            <option value="vendor">Vendor (Sell products)</option>
+                        </select>
                     </div>
 
                     <button type="submit" className="primary-btn" disabled={loading} style={{ width: '100%', marginTop: '8px', padding: '12px' }}>

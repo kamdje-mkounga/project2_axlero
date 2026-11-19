@@ -1,24 +1,20 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
 export default function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token') || null);
+    const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+    const [user, setUser] = useState(() => {
+        try {
+            const savedUser = localStorage.getItem('user');
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch {
+            return null;
+        }
+    });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser && token) {
-            try {
-                setUser(JSON.parse(savedUser));
-            } catch (e) {
-                console.error('Failed to parse user data', e);
-            }
-        }
-    }, [token]);
 
     const login = async (email, password) => {
         setLoading(true);
@@ -53,7 +49,14 @@ export default function AuthProvider({ children }) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
-            navigate('/');
+            // Role-based redirection upon successful login
+            if (data.user?.role === 'admin') {
+                navigate('/admin/dashboard');
+            } else if (data.user?.role === 'vendor') {
+                navigate('/vendor/dashboard');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             alert(err.message);
         } finally {
@@ -61,7 +64,7 @@ export default function AuthProvider({ children }) {
         }
     };
 
-    const register = async (name, email, password) => {
+    const register = async (name, email, password, role = 'customer') => {
         setLoading(true);
         try {
             let res;
@@ -69,13 +72,13 @@ export default function AuthProvider({ children }) {
                 res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password }),
+                    body: JSON.stringify({ name, email, password, role }),
                 });
             } catch {
                 res = await fetch('http://localhost:5000/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password }),
+                    body: JSON.stringify({ name, email, password, role }),
                 });
             }
 

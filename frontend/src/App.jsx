@@ -20,6 +20,11 @@ import AuthProvider from './context/AuthProvider'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import { useAuth } from './context/AuthProvider'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './components/admin/AdminDashboard'
+import AdminUsers from './components/admin/AdminUsers'
+import AdminProducts from './components/admin/AdminProducts'
 
 // Initial mock products for the consumer catalog
 const INITIAL_PRODUCTS = [
@@ -809,10 +814,11 @@ function VendorSidebar() {
 
 function VendorLayout() {
   const location = useLocation()
-  titles = {
-    '/vendor/dashboard': 'Dashboard',
+  const { user, logout } = useAuth()
+  const titles = {
+    '/vendor/dashboard': 'Vendor Dashboard',
     '/vendor/products': 'My Products',
-    '/vendor/products/add': 'Add Product',
+    '/vendor/products/add': 'Add New Product',
   }
 
   return (
@@ -823,9 +829,34 @@ function VendorLayout() {
           <div className="topbar-title">
             {titles[location.pathname] || 'Vendor Portal'}
           </div>
-          <div className="profile">
-            <span>Vendor Account</span>
-            <div className="avatar">V</div>
+          <div className="profile" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
+                {user?.name || 'Vendor Account'}
+              </div>
+              <span style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#d97706',
+                background: '#fef3c7',
+                padding: '2px 8px',
+                borderRadius: '10px',
+                display: 'inline-block'
+              }}>
+                {user?.role?.toUpperCase() || 'VENDOR'}
+              </span>
+            </div>
+            <div className="avatar" style={{ background: '#2563eb', color: '#fff', fontWeight: 700 }}>
+              {user?.name ? user.name[0].toUpperCase() : 'V'}
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="secondary-btn sm"
+              style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}
+            >
+              Logout
+            </button>
           </div>
         </header>
 
@@ -834,6 +865,7 @@ function VendorLayout() {
             <Route path="dashboard" element={<VendorDashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="products/add" element={<AddProduct />} />
+            <Route index element={<VendorDashboard />} />
           </Routes>
         </div>
       </main>
@@ -842,16 +874,20 @@ function VendorLayout() {
 }
 
 function VendorDashboard() {
-  const [productCount, setProductCount] = useState(INITIAL_PRODUCTS.length)
+  const { user } = useAuth()
+  const [productCount, setProductCount] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadCount() {
       try {
+        setLoading(true)
+        const endpoint = user?.id ? `/api/products?vendorId=${user.id}` : '/api/products'
         let res
         try {
-          res = await fetch('/api/products')
+          res = await fetch(endpoint)
         } catch {
-          res = await fetch('http://localhost:5000/api/products')
+          res = await fetch(`http://localhost:5000${endpoint}`)
         }
         if (res.ok) {
           const data = await res.json()
@@ -861,17 +897,19 @@ function VendorDashboard() {
         }
       } catch (err) {
         console.warn('Could not fetch vendor count from DB:', err.message)
+      } finally {
+        setLoading(false)
       }
     }
     loadCount()
-  }, [])
+  }, [user])
 
   return (
     <>
       <div className="page-heading">
         <div>
-          <h1>Welcome, Vendor!</h1>
-          <p>Here's an overview of your store performance.</p>
+          <h1>Welcome, {user?.name || 'Vendor'}!</h1>
+          <p>Manage your inventory, monitor listings, and reach verified buyers.</p>
         </div>
         <Link to="/vendor/products/add">
           <button className="primary-btn">+ Add Product</button>
@@ -881,64 +919,105 @@ function VendorDashboard() {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">📦</div>
-          <p className="stat-label">Total Products</p>
-          <div className="stat-value">{productCount}</div>
+          <p className="stat-label">My Listed Products</p>
+          <div className="stat-value">{loading ? '...' : productCount}</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🛒</div>
-          <p className="stat-label">Total Orders</p>
-          <div className="stat-value">12</div>
+          <p className="stat-label">Pending Orders</p>
+          <div className="stat-value">3</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <p className="stat-label">Total Revenue</p>
-          <div className="stat-value">₹45,290</div>
+          <div className="stat-value">₹24,500</div>
         </div>
       </div>
 
       <div className="panel">
-        <h2>Recent Activity</h2>
-        <p>Your store received 3 new orders today. Keep up the great work!</p>
+        <h2>Seller Notice & Quick Tips</h2>
+        <p style={{ color: '#475569', lineHeight: 1.6 }}>
+          You have authorized <strong>Vendor</strong> access to manage your catalog. 
+          All added products undergo instant RBAC validation and are immediately discoverable on the main storefront.
+        </p>
       </div>
     </>
   )
 }
 
 function Products() {
-  const [vendorProducts, setVendorProducts] = useState(INITIAL_PRODUCTS)
+  const { user, token } = useAuth()
+  const [vendorProducts, setVendorProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState(null)
+
+  async function loadProducts() {
+    try {
+      setLoading(true)
+      const endpoint = user?.id ? `/api/products?vendorId=${user.id}` : '/api/products'
+      let res
+      try {
+        res = await fetch(endpoint)
+      } catch {
+        res = await fetch(`http://localhost:5000${endpoint}`)
+      }
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray(data)) {
+          setVendorProducts(data)
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load vendor products from DB:', err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        setLoading(true)
-        let res
-        try {
-          res = await fetch('/api/products')
-        } catch {
-          res = await fetch('http://localhost:5000/api/products')
-        }
-        if (res.ok) {
-          const data = await res.json()
-          if (Array.isArray(data) && data.length > 0) {
-            setVendorProducts(data)
-          }
-        }
-      } catch (err) {
-        console.warn('Could not load vendor products from DB:', err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
     loadProducts()
-  }, [])
+  }, [user])
+
+  async function handleDelete(productId, productName) {
+    if (!window.confirm(`Are you sure you want to delete "${productName}"?`)) {
+      return
+    }
+
+    try {
+      setDeletingId(productId)
+      let res
+      try {
+        res = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      } catch {
+        res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      }
+
+      if (res.ok) {
+        alert('Product deleted successfully.')
+        setVendorProducts((prev) => prev.filter((p) => (p._id || p.id) !== productId))
+      } else {
+        const errData = await res.json()
+        alert(`Failed to delete: ${errData.error || 'Server error'}`)
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <>
       <div className="page-heading">
         <div>
           <h1>My Products</h1>
-          <p>Manage all products in your store.</p>
+          <p>Manage all products in your store inventory.</p>
         </div>
         <Link to="/vendor/products/add">
           <button className="primary-btn">+ Add Product</button>
@@ -947,44 +1026,77 @@ function Products() {
 
       <div className="panel">
         <h2>Product List ({vendorProducts.length} items)</h2>
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>PRODUCT</th>
-                <th>CATEGORY</th>
-                <th>PRICE</th>
-                <th>STOCK</th>
-                <th>STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vendorProducts.map((p) => {
-                const pId = p._id || p.id
-                return (
-                  <tr key={pId}>
-                    <td style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px' }}
-                      />
-                      <span style={{ fontWeight: 500 }}>{p.name}</span>
-                    </td>
-                    <td>{p.category}</td>
-                    <td>₹{p.price}</td>
-                    <td>{p.stock}</td>
-                    <td>
-                      <span className={`status-badge ${p.status === 'In Stock' ? 'success' : 'warning'}`}>
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <p style={{ padding: '20px 0', color: '#666' }}>Loading your products...</p>
+        ) : vendorProducts.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '30px 0' }}>
+            <p style={{ color: '#64748b', marginBottom: '16px' }}>You haven't added any products yet.</p>
+            <Link to="/vendor/products/add">
+              <button className="primary-btn sm">+ Add Your First Product</button>
+            </Link>
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>PRODUCT</th>
+                  <th>CATEGORY</th>
+                  <th>PRICE</th>
+                  <th>STOCK</th>
+                  <th>STATUS</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vendorProducts.map((p) => {
+                  const pId = p._id || p.id
+                  const isDeleting = deletingId === pId
+
+                  return (
+                    <tr key={pId}>
+                      <td style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px' }}
+                        />
+                        <span style={{ fontWeight: 500 }}>{p.name}</span>
+                      </td>
+                      <td>{p.category}</td>
+                      <td>₹{p.price?.toLocaleString('en-IN')}</td>
+                      <td>{p.stock}</td>
+                      <td>
+                        <span className={`status-badge ${p.stock > 0 ? 'success' : 'warning'}`}>
+                          {p.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(pId, p.name)}
+                          disabled={isDeleting}
+                          style={{
+                            background: '#fee2e2',
+                            color: '#b91c1c',
+                            border: '1px solid #fecaca',
+                            borderRadius: '6px',
+                            padding: '4px 10px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            cursor: isDeleting ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          {isDeleting ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </>
   )
@@ -992,16 +1104,69 @@ function Products() {
 
 function AddProduct() {
   const navigate = useNavigate()
-  const [imageFile, setImageFile] = useState(null)
+  const { token } = useAuth()
+  const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
+  const [price, setPrice] = useState('')
+  const [stock, setStock] = useState('')
+  const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [_imageFile, setImageFile] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    alert(
-      imageFile
-        ? `Product saved successfully with image: ${imageFile.name}!`
-        : 'Product saved successfully!'
-    )
-    navigate('/vendor/products')
+    setSubmitting(true)
+
+    // Fallback default image if file or URL not specified
+    const finalImage =
+      imageUrl.trim() ||
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'
+
+    try {
+      let res
+      const payload = {
+        name: name.trim(),
+        category,
+        price: Number(price),
+        stock: Number(stock),
+        description: description.trim(),
+        image: finalImage,
+      }
+
+      try {
+        res = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        })
+      } catch {
+        res = await fetch('http://localhost:5000/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        })
+      }
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save product.')
+      }
+
+      alert(`Product "${data.name}" added successfully to your catalog!`)
+      navigate('/vendor/products')
+    } catch (err) {
+      alert(`Error creating product: ${err.message}`)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -1009,7 +1174,7 @@ function AddProduct() {
       <div className="page-heading">
         <div>
           <h1>Add New Product</h1>
-          <p>Enter your product details and upload an image.</p>
+          <p>Enter your product details and specify image URL.</p>
         </div>
       </div>
 
@@ -1017,41 +1182,93 @@ function AddProduct() {
         <div className="form-grid">
           <div className="form-group">
             <label htmlFor="productName">Product Name *</label>
-            <input id="productName" type="text" placeholder="Enter product name" required />
+            <input
+              id="productName"
+              type="text"
+              placeholder="e.g. Wireless Noise-Canceling Headphones"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="category">Category *</label>
-            <select id="category" required defaultValue="">
+            <select
+              id="category"
+              required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
               <option value="" disabled>Select category</option>
-              <option>Electronics</option>
-              <option>Fashion</option>
-              <option>Home & Kitchen</option>
-              <option>Books</option>
-              <option>Other</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Home & Kitchen">Home & Kitchen</option>
+              <option value="Books">Books</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
           <div className="form-group">
             <label htmlFor="price">Price (₹) *</label>
-            <input id="price" type="number" min="0" placeholder="Enter price" required />
+            <input
+              id="price"
+              type="number"
+              min="0"
+              placeholder="e.g. 2999"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="stock">Stock Quantity *</label>
-            <input id="stock" type="number" min="0" placeholder="Enter quantity" required />
+            <input
+              id="stock"
+              type="number"
+              min="0"
+              placeholder="e.g. 20"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              required
+            />
           </div>
         </div>
 
         <div className="form-group">
+          <label htmlFor="imageUrl">Product Image URL</label>
+          <input
+            id="imageUrl"
+            type="url"
+            placeholder="https://images.unsplash.com/..."
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+          <small style={{ color: '#64748b', marginTop: '4px', display: 'block' }}>
+            Enter a direct image URL or use the file selector below
+          </small>
+        </div>
+
+        <div className="form-group">
           <label htmlFor="description">Product Description *</label>
-          <textarea id="description" rows="4" placeholder="Describe your product..." required />
+          <textarea
+            id="description"
+            rows="4"
+            placeholder="Describe features, specifications, and warranty..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
         </div>
 
         <ProductImageUpload onImageSelect={setImageFile} />
 
         <div className="form-actions">
-          <button type="submit" className="primary-btn">Save Product</button>
+          <button type="submit" className="primary-btn" disabled={submitting}>
+            {submitting ? 'Saving to Database...' : 'Save Product'}
+          </button>
           <button type="button" className="secondary-btn" onClick={() => navigate('/vendor/products')}>
             Cancel
           </button>
@@ -1060,7 +1277,6 @@ function AddProduct() {
     </>
   )
 }
-
 
 // ==========================================
 // CONSUMER STOREFRONT COMPONENTS
@@ -1085,14 +1301,41 @@ function StorefrontLayout() {
         </div>
 
         <div className="store-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link to="/vendor/dashboard" className="vendor-switch-btn">
-            Vendor Portal
-          </Link>
+          {/* Admin Control Center Link */}
+          {user?.role === 'admin' && (
+            <Link
+              to="/admin/dashboard"
+              className="vendor-switch-btn"
+              style={{ background: '#ef4444', borderColor: '#dc2626' }}
+            >
+              🛡️ Admin Portal
+            </Link>
+          )}
+
+          {/* Vendor Portal Link */}
+          {(user?.role === 'vendor' || user?.role === 'admin') && (
+            <Link to="/vendor/dashboard" className="vendor-switch-btn">
+              💼 Vendor Portal
+            </Link>
+          )}
 
           {/* Affichage dynamique Connexion / Utilisateur */}
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>Hello, {user.name}</span>
+              <span style={{ fontSize: '14px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                Hello, {user.name}
+                <span style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  background: user.role === 'admin' ? '#fee2e2' : user.role === 'vendor' ? '#fef3c7' : '#e0e7ff',
+                  color: user.role === 'admin' ? '#991b1b' : user.role === 'vendor' ? '#92400e' : '#3730a3',
+                }}>
+                  {user.role}
+                </span>
+              </span>
               <button
                 onClick={logout}
                 className="secondary-btn sm"
@@ -1486,8 +1729,32 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Vendor Portal Routes */}
-        <Route path="/vendor/*" element={<VendorLayout />} />
+        {/* Admin Portal Routes (Admin Only) */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Routes>
+                <Route element={<AdminLayout />}>
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route index element={<AdminDashboard />} />
+                </Route>
+              </Routes>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Vendor Portal Routes (Vendor & Admin) */}
+        <Route
+          path="/vendor/*"
+          element={
+            <ProtectedRoute allowedRoles={['vendor', 'admin']}>
+              <VendorLayout />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Consumer Storefront Routes */}
         <Route path="/*" element={<StorefrontLayout />} />
