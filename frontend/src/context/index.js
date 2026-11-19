@@ -1,3 +1,6 @@
 export { CartContext } from './CartContext.js'
 export { CartProvider } from './CartProvider.jsx'
 export { useCart } from './useCart.js'
+export { AuthContext } from './AuthContext.js'
+export { default as AuthProvider } from './AuthProvider.jsx'
+export { useAuth } from './useAuth.js'

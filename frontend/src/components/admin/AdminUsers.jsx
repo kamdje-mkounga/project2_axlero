@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../context/AuthProvider';
+import { useAuth } from '../../context';
 
 export default function AdminUsers() {
     const { token } = useAuth();

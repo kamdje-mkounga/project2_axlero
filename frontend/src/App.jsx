@@ -14,12 +14,10 @@ import ProductImageUpload from './components/ProductImageUpload'
 import CartDrawer from './components/cart/CartDrawer'
 import FilterSidebar from './components/filters/FilterSidebar'
 import ActiveFilters from './components/filters/ActiveFilters'
-import { useCart } from './context'
+import { useCart, AuthProvider, useAuth } from './context'
 
-import AuthProvider from './context/AuthProvider'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
-import { useAuth } from './context/AuthProvider'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AdminLayout from './components/admin/AdminLayout'
 import AdminDashboard from './components/admin/AdminDashboard'
@@ -951,32 +949,41 @@ function Products() {
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState(null)
 
-  async function loadProducts() {
-    try {
-      setLoading(true)
-      const endpoint = user?.id ? `/api/products?vendorId=${user.id}` : '/api/products'
-      let res
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadProducts() {
       try {
-        res = await fetch(endpoint)
-      } catch {
-        res = await fetch(`http://localhost:5000${endpoint}`)
-      }
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray(data)) {
-          setVendorProducts(data)
+        const endpoint = user?.id ? `/api/products?vendorId=${user.id}` : '/api/products'
+        let res
+        try {
+          res = await fetch(endpoint)
+        } catch {
+          res = await fetch(`http://localhost:5000${endpoint}`)
+        }
+        if (res.ok && isMounted) {
+          const data = await res.json()
+          if (Array.isArray(data)) {
+            setVendorProducts(data)
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.warn('Could not load vendor products from DB:', err.message)
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
         }
       }
-    } catch (err) {
-      console.warn('Could not load vendor products from DB:', err.message)
-    } finally {
-      setLoading(false)
     }
-  }
 
-  useEffect(() => {
     loadProducts()
-  }, [user])
+
+    return () => {
+      isMounted = false
+    }
+  }, [user?.id])
 
   async function handleDelete(productId, productName) {
     if (!window.confirm(`Are you sure you want to delete "${productName}"?`)) {
