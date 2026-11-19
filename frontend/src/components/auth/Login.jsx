@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthProvider'; // Ajustez le chemin si nécessaire
+import { useAuth } from '../../context/AuthProvider';
 
 export default function Login() {
     const [email, setEmail] = useState('');
