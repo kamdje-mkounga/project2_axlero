@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthProvider';
+import { useAuth } from '../../context';
 
 export default function AdminDashboard() {
     const { token } = useAuth();

@@ -1,5 +1,5 @@
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthProvider';
+import { useAuth } from '../../context';
 
 function AdminSidebar() {
     return (

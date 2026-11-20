@@ -1,7 +1,6 @@
-import { createContext, useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const AuthContext = createContext(null);
+import { AuthContext } from './AuthContext.js';
 
 export default function AuthProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem('token') || null);
@@ -115,5 +114,3 @@ export default function AuthProvider({ children }) {
         </AuthContext.Provider>
     );
 }
-
-export const useAuth = () => useContext(AuthContext);
