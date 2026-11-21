@@ -935,7 +935,7 @@ function VendorDashboard() {
       <div className="panel">
         <h2>Seller Notice & Quick Tips</h2>
         <p style={{ color: '#475569', lineHeight: 1.6 }}>
-          You have authorized <strong>Vendor</strong> access to manage your catalog. 
+          You have authorized <strong>Vendor</strong> access to manage your catalog.
           All added products undergo instant RBAC validation and are immediately discoverable on the main storefront.
         </p>
       </div>
@@ -1291,7 +1291,7 @@ function AddProduct() {
 
 function StorefrontLayout() {
   const { totalItems, toggleCart } = useCart()
-  const { user, logout } = useAuth() // Utilisation du contexte d'authentification réel
+  const { user, logout } = useAuth()
 
   return (
     <div className="storefront-layout">
@@ -1646,7 +1646,7 @@ function ProductCatalog() {
             {loading ? (
               <div className="catalog-loading">
                 <div className="spinner"></div>
-                <p>Loading products from database...</p>
+                <p>Loading products...</p>
               </div>
             ) : filteredAndSortedProducts.length > 0 ? (
               filteredAndSortedProducts.map((product) => {
