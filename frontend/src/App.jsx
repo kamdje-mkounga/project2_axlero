@@ -775,7 +775,7 @@ const INITIAL_PRODUCTS = [
     description: 'Slim card holder designed for carrying essential cards and IDs.'
   },
   {
-    id: 68,
+    id: 69,
     name: 'Spiral Notebook',
     category: 'Accessories',
     price: 549,
