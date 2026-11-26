@@ -316,8 +316,8 @@
 
 /* Panels and tables */
 .panel {
-  background: white;
-  border: 1px solid #e8edf4;
+  background: rgb(59, 138, 156);
+  border: 1px solid #2d62ad;
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
@@ -404,7 +404,7 @@ tbody tr:hover td {
 .primary-btn:hover:not(:disabled) {
   background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 6px 16px rgba(78, 84, 97, 0.28);
 }
 
 .primary-btn:active:not(:disabled) {
@@ -575,7 +575,7 @@ tbody tr:hover td {
 
 .store-link {
   position: relative;
-  color: #64748b;
+  color: #6692d1;
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
