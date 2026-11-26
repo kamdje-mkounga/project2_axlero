@@ -65,7 +65,7 @@ export default function FilterSidebar({
                 className="filter-reset-link"
                 onClick={onResetAll}
               >
-                Reset all
+                Reset All
               </button>
             )}
             <button
