@@ -883,35 +883,100 @@ function VendorLayout() {
 }
 
 function VendorDashboard() {
-  const { user } = useAuth()
-  const [productCount, setProductCount] = useState(0)
+  const { user, token } = useAuth()
+  const [stats, setStats] = useState({
+    productCount: 0,
+    pendingOrders: 0,
+    totalRevenue: 0,
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function loadCount() {
+    let isMounted = true
+
+    async function loadDashboardStats() {
       try {
         setLoading(true)
         const endpoint = user?.id ? `/api/products?vendorId=${user.id}` : '/api/products'
-        let res
+
+        let productRes
         try {
-          res = await fetch(endpoint)
+          productRes = await fetch(endpoint)
         } catch {
-          res = await fetch(`http://localhost:5000${endpoint}`)
+          productRes = await fetch(`http://localhost:5000${endpoint}`)
         }
-        if (res.ok) {
-          const data = await res.json()
+
+        let productsList = []
+        if (productRes.ok) {
+          const data = await productRes.json()
           if (Array.isArray(data)) {
-            setProductCount(data.length)
+            productsList = data
           }
         }
+
+        // Try fetching live orders if an orders API exists
+        let ordersList = []
+        try {
+          const ordersEndpoint = user?.id ? `/api/orders?vendorId=${user.id}` : '/api/orders'
+          let orderRes
+          try {
+            orderRes = await fetch(ordersEndpoint, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
+          } catch {
+            orderRes = await fetch(`http://localhost:5000${ordersEndpoint}`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
+          }
+
+          if (orderRes && orderRes.ok) {
+            const orderData = await orderRes.json()
+            if (Array.isArray(orderData)) {
+              ordersList = orderData
+            }
+          }
+        } catch {
+          // Orders API not available yet; fallback to product metrics below
+        }
+
+        if (isMounted) {
+          const productCount = productsList.length
+
+          // Calculate from orders if available, otherwise calculate from product sales/stock value
+          const pendingOrders =
+            ordersList.length > 0
+              ? ordersList.filter((o) => o.status?.toLowerCase() === 'pending').length
+              : 0
+
+          const totalRevenue =
+            ordersList.length > 0
+              ? ordersList.reduce((sum, order) => sum + (Number(order.totalAmount || order.total) || 0), 0)
+              : productsList.reduce(
+                (sum, item) => sum + (Number(item.price) || 0) * (Number(item.soldCount ?? item.stock) || 0),
+                0
+              )
+
+          setStats({
+            productCount,
+            pendingOrders,
+            totalRevenue,
+          })
+        }
       } catch (err) {
-        console.warn('Could not fetch vendor count from DB:', err.message)
+        console.warn('Could not fetch vendor dashboard stats:', err.message)
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
-    loadCount()
-  }, [user])
+
+    loadDashboardStats()
+
+    return () => {
+      isMounted = false
+    }
+  }, [user?.id, token])
 
   return (
     <>
@@ -929,17 +994,19 @@ function VendorDashboard() {
         <div className="stat-card">
           <div className="stat-icon">📦</div>
           <p className="stat-label">My Listed Products</p>
-          <div className="stat-value">{loading ? '...' : productCount}</div>
+          <div className="stat-value">{loading ? '...' : stats.productCount}</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🛒</div>
           <p className="stat-label">Pending Orders</p>
-          <div className="stat-value">3</div>
+          <div className="stat-value">{loading ? '...' : stats.pendingOrders}</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <p className="stat-label">Total Revenue</p>
-          <div className="stat-value">₹24,500</div>
+          <div className="stat-value">
+            {loading ? '...' : `₹${stats.totalRevenue.toLocaleString('en-IN')}`}
+          </div>
         </div>
       </div>
 
@@ -1447,7 +1514,15 @@ function ProductCatalog() {
         const data = await response.json()
         if (isMounted) {
           if (Array.isArray(data) && data.length > 0) {
-            setProducts(data)
+            const dbKeys = new Set(
+              data.map((item) => String(item._id || item.id || item.name).toLowerCase())
+            )
+            const remainingInitial = INITIAL_PRODUCTS.filter((item) => {
+              const idKey = String(item.id).toLowerCase()
+              const nameKey = String(item.name).toLowerCase()
+              return !dbKeys.has(idKey) && !dbKeys.has(nameKey)
+            })
+            setProducts([...data, ...remainingInitial])
           } else {
             setProducts(INITIAL_PRODUCTS)
           }
