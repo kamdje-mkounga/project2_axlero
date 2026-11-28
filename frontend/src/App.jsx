@@ -1364,7 +1364,7 @@ function AddProduct() {
 }
 
 // ==========================================
-// CONSUMER STOREFRONT COMPONENTS
+// CONSUMER STOREFRONT COMPONENTS.
 // ==========================================
 
 function StorefrontLayout() {
